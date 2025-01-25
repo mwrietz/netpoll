@@ -18,6 +18,14 @@ pub fn network_poll() !void {
     // get my ip address and format with last char = '*'
     const my_net_ip_range = try mn.getMyNetIPv4();
 
+    // todo
+    // create ArrayList of ip addresses
+    // push all ip addresses from "all" list (ip's with hostnames)
+    // push all ip addresses from "up" list
+    // sort and deduplicate arraylist
+    // create hashmap with ip addresses as keys and hostnames as values
+    // print arraylist of ip addresses and print hostnames when they exist in the hashmap
+
     // const out_up_only = try callCommand(alloc, &[_][]const u8{ "nmap", "-sn", "-Pn", my_net_ip_range });
     // defer out_up_only.deinit();
     const out_all = try callCommand(alloc, &[_][]const u8{ "nmap", "-sn", "-Pn", my_net_ip_range });
@@ -26,6 +34,9 @@ pub fn network_poll() !void {
     // split output into lines iterator
     var lines_all = std.mem.split(u8, out_all.items, "\n");
     // var lines_up_only = std.mem.split(u8, out_up_only.items, "\n");
+
+    var ip_list = std.ArrayList([]const u8).init(alloc);
+    var hostname_map = std.StringHashMap([]const u8).init(alloc);
 
     var count: u32 = 0;
     while (lines_all.next()) |line| {
@@ -43,12 +54,28 @@ pub fn network_poll() !void {
 
             // print devices that include a hostname
             if (wordList.items.len == 6) {
+
+                // add ip address to list
+                const ip = std.mem.trim(u8, wordList.items[5], "()");
+                try ip_list.append(ip);
+
+                // add ip and hostname to hashmap
+                try hostname_map.put(ip, wordList.items[4]);
+
+                // print ip address and hostname
                 count += 1;
                 zth.printColor("    {:3}:  ", .{count}, "gray");
                 zth.print("{s:<16} {s}\n", .{ std.mem.trim(u8, wordList.items[5], "()"), wordList.items[4] });
                 try ansi.Cursor.to(stdout, 0, null);
             }
         }
+    }
+    for (ip_list.items) |ip| {
+        const hostname = hostname_map.get(ip);
+        //zth.print("Type: {any}\n", .{@TypeOf(hostname)});
+        zth.print("{s} {?s}\n", .{ ip, hostname });
+        //zth.print("{s} {s}\n", .{ ip, hostname });
+        try ansi.Cursor.to(stdout, 0, null);
     }
 }
 
@@ -107,3 +134,49 @@ pub fn callCommand(alloc: std.mem.Allocator, command: []const []const u8) !std.A
         return stdout;
     }
 }
+
+// pub fn dedupAndSortStrings(allocator: std.mem.Allocator, input_list: std.ArrayList([]const u8)) !std.ArrayList([]const u8) {
+//     // Sort the input list
+//     var sorted_list = try input_list.clone(allocator);
+//     defer sorted_list.deinit();
+//     std.sort.sort([]const u8, sorted_list.items, {}, comptime std.sort.asc([]const u8));
+//
+//     // Create a new list to store unique strings
+//     var unique_list = std.ArrayList([]const u8).init(allocator);
+//     errdefer unique_list.deinit();
+//
+//     // Add unique strings
+//     for (sorted_list.items) |current_str| {
+//         if (unique_list.items.len == 0 or
+//             !std.mem.eql(u8, current_str, unique_list.items[unique_list.items.len - 1])) {
+//             try unique_list.append(try allocator.dupe(u8, current_str));
+//         }
+//     }
+//
+//     return unique_list;
+// }
+//
+// test "dedup and sort strings" {
+//     var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
+//     defer arena.deinit();
+//     const allocator = arena.allocator();
+//
+//     var test_list = std.ArrayList([]const u8).init(allocator);
+//     defer test_list.deinit();
+//
+//     try test_list.appendSlice(&[_][]const u8{"banana", "apple", "cherry", "banana", "apple"});
+//
+//     const result = try dedupAndSortStrings(allocator, test_list);
+//     defer {
+//         for (result.items) |item| {
+//             allocator.free(item);
+//         }
+//         result.deinit();
+//     }
+//
+//     const expected = &[_][]const u8{"apple", "banana", "cherry"};
+//     try std.testing.expectEqual(expected.len, result.items.len);
+//     for (expected, 0..) |exp, i| {
+//         try std.testing.expectEqualStrings(exp, result.items[i]);
+//     }
+// }

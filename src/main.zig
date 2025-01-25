@@ -11,7 +11,7 @@ const printColor = zth.printColor;
 const printInverseColor = zth.printInverseColor;
 const clear = zth.clear;
 
-const version = "v0.0.1";
+const version = "v0.0.2";
 
 const Allocator = std.mem.Allocator;
 
@@ -133,15 +133,6 @@ pub fn header() !void {
     const prog_name = try zth.getProgramName(allocator);
 
     const stdout = std.io.getStdOut().writer();
-
-    // get terminal size and position cursor
-    // const tsize = zth.TermSize.init(std.io.getStdOut());
-    // var xpos: u32 = 0;
-    // const vlen: u32 = @intCast(version.len);
-    // const nlen: u32 = @intCast(prog_name.len);
-    // if (tsize.getWidth() > (nlen + vlen + 1)) {
-    //     xpos = tsize.getWidth() - nlen - vlen - 2;
-    // }
 
     // print version
     const xpos = try headerGetMsgWindowWidth() + 1;
