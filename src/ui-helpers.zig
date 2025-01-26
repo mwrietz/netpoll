@@ -1,33 +1,30 @@
-// zig-tui-helpers.zig
-
 const std = @import("std");
-const zc = @import("zig-colors.zig");
+const uc = @import("ui-color.zig");
+
 const ansi = @import("third-party/ansi.zig").ansi;
 const datetime = @import("third-party/datetime.zig");
 
-const builtin = @import("builtin");
-const io = std.io;
-const os = std.os;
+pub const TermSize = struct {
+    width: u16,
+    height: u16,
 
-const bufPrint = std.fmt.bufPrint;
+    pub fn init(file: std.fs.File) TermSize {
+        var buf: std.posix.system.winsize = undefined;
+        _ = std.posix.system.ioctl(file.handle, std.posix.T.IOCGWINSZ, @intFromPtr(&buf));
+        return TermSize{
+            .width = buf.ws_col,
+            .height = buf.ws_row,
+        };
+    }
 
-pub fn clear() !void {
-    const stdout = std.io.getStdOut().writer();
-    try ansi.clear.screen(stdout);
-}
+    pub fn getWidth(self: TermSize) u16 {
+        return self.width;
+    }
 
-pub fn getColor(color: []const u8) zc.Color {
-    if (std.mem.eql(u8, "black", color)) return zc.Color.black;
-    if (std.mem.eql(u8, "red", color)) return zc.Color.red;
-    if (std.mem.eql(u8, "green", color)) return zc.Color.green;
-    if (std.mem.eql(u8, "yellow", color)) return zc.Color.yellow;
-    if (std.mem.eql(u8, "blue", color)) return zc.Color.blue;
-    if (std.mem.eql(u8, "magenta", color)) return zc.Color.magenta;
-    if (std.mem.eql(u8, "cyan", color)) return zc.Color.cyan;
-    if (std.mem.eql(u8, "white", color)) return zc.Color.white;
-    if (std.mem.eql(u8, "orange", color)) return zc.Color.orange;
-    return zc.Color.reset;
-}
+    pub fn getHeight(self: TermSize) u16 {
+        return self.height;
+    }
+};
 
 pub fn getInt(prompt: []const u8) !i32 {
     const stdin = std.io.getStdIn().reader();
@@ -89,7 +86,7 @@ pub fn print(comptime fmt: []const u8, args: anytype) void {
 pub fn printColor(comptime fmt: []const u8, args: anytype, color: []const u8) void {
     const stdout = std.io.getStdOut().writer();
 
-    stdout.print("{s}", .{getColor(color).foreground()}) catch |err| {
+    stdout.print("{s}", .{uc.getColor(color).foreground()}) catch |err| {
         std.debug.print("Error while printing: {}\n", .{err});
         return;
     };
@@ -97,7 +94,7 @@ pub fn printColor(comptime fmt: []const u8, args: anytype, color: []const u8) vo
         std.debug.print("Error while printing: {}\n", .{err});
         return;
     };
-    stdout.print("{s}", .{getColor("reset").foreground()}) catch |err| {
+    stdout.print("{s}", .{uc.getColor("reset").foreground()}) catch |err| {
         std.debug.print("Error while printing: {}\n", .{err});
         return;
     };
@@ -106,7 +103,7 @@ pub fn printColor(comptime fmt: []const u8, args: anytype, color: []const u8) vo
 pub fn printInverseColor(comptime fmt: []const u8, args: anytype, color: []const u8) void {
     const stdout = std.io.getStdOut().writer();
 
-    stdout.print("{s}{s}", .{ getColor(color).background(), zc.Color.black.foreground() }) catch |err| {
+    stdout.print("{s}{s}", .{ uc.getColor(color).background(), uc.Color.black.foreground() }) catch |err| {
         std.debug.print("Error while printing: {}\n", .{err});
         return;
     };
@@ -114,33 +111,11 @@ pub fn printInverseColor(comptime fmt: []const u8, args: anytype, color: []const
         std.debug.print("Error while printing: {}\n", .{err});
         return;
     };
-    stdout.print("{s}{s}", .{ getColor("reset").background(), zc.Color.reset.foreground() }) catch |err| {
+    stdout.print("{s}{s}", .{ uc.getColor("reset").background(), uc.Color.reset.foreground() }) catch |err| {
         std.debug.print("Error while printing: {}\n", .{err});
         return;
     };
 }
-
-pub const TermSize = struct {
-    width: u16,
-    height: u16,
-
-    pub fn init(file: std.fs.File) TermSize {
-        var buf: std.posix.system.winsize = undefined;
-        _ = std.posix.system.ioctl(file.handle, std.posix.T.IOCGWINSZ, @intFromPtr(&buf));
-        return TermSize{
-            .width = buf.ws_col,
-            .height = buf.ws_row,
-        };
-    }
-
-    pub fn getWidth(self: TermSize) u16 {
-        return self.width;
-    }
-
-    pub fn getHeight(self: TermSize) u16 {
-        return self.height;
-    }
-};
 
 pub fn timestamp() ![]u8 {
     // get allocator

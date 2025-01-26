@@ -1,8 +1,8 @@
 const std = @import("std");
 const mn = @import("mynet.zig");
-const zth = @import("zig-tui-helpers.zig");
+
+const uh = @import("ui-helpers.zig");
 const ansi = @import("third-party/ansi.zig");
-const Child = std.process.Child;
 
 const RunError = error{
     Failed,
@@ -32,14 +32,14 @@ pub fn network_poll() !void {
     }
 
     try ansi.Cursor.to(stdout, 0, 2);
-    zth.printColor("          IP Address       Hostname\n", .{}, "blue");
+    uh.printColor("          IP Address       Hostname\n", .{}, "blue");
     try ansi.Cursor.to(stdout, 0, null);
     var count: u32 = 0;
     for (deduped_ip_list.items) |ip| {
         count += 1;
         const hostname = hostname_map.get(ip);
-        zth.printColor("    {:3}:  ", .{count}, "blue");
-        zth.print("{s:<16} {?s}\n", .{ ip, hostname });
+        uh.printColor("    {:3}:  ", .{count}, "blue");
+        uh.print("{s:<16} {?s}\n", .{ ip, hostname });
         try ansi.Cursor.to(stdout, 0, null);
     }
 }
@@ -142,7 +142,7 @@ pub fn strBeginsWith(s1: []const u8, s2: []const u8) bool {
 }
 
 pub fn callCommand(alloc: std.mem.Allocator, command: []const []const u8) !std.ArrayList(u8) {
-    var caller = Child.init(command, alloc);
+    var caller = std.process.Child.init(command, alloc);
     caller.stdout_behavior = .Pipe;
     caller.stderr_behavior = .Pipe;
 

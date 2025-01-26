@@ -49,12 +49,15 @@ pub const Color = enum {
     }
 };
 
-// // Example usage:
-// pub fn main() !void {
-//     const stdout = std.io.getStdOut().writer();
-//     try stdout.print("{s}Colorful {s}Text{s}\n", .{
-//         Color.red.foreground(),
-//         Color.blue.background(),
-//         Color.reset.foreground(),
-//     });
-// }
+pub fn getColor(color: []const u8) Color {
+    if (std.mem.eql(u8, "black", color)) return Color.black;
+    if (std.mem.eql(u8, "red", color)) return Color.red;
+    if (std.mem.eql(u8, "green", color)) return Color.green;
+    if (std.mem.eql(u8, "yellow", color)) return Color.yellow;
+    if (std.mem.eql(u8, "blue", color)) return Color.blue;
+    if (std.mem.eql(u8, "magenta", color)) return Color.magenta;
+    if (std.mem.eql(u8, "cyan", color)) return Color.cyan;
+    if (std.mem.eql(u8, "white", color)) return Color.white;
+    if (std.mem.eql(u8, "orange", color)) return Color.orange;
+    return Color.reset;
+}
