@@ -33,8 +33,6 @@ pub fn main() !void {
     var menu = std.ArrayList(MenuItem).init(allocator);
     defer menu.deinit();
 
-    // try menu.append(.{ .key = "a", .action = "Poll_Network(ALL)" });
-    // try menu.append(.{ .key = "u", .action = "Poll_Network(UP)" });
     try menu.append(.{ .key = "p", .action = "Poll_Network" });
     try menu.append(.{ .key = "q", .action = "Quit" });
 
@@ -56,16 +54,6 @@ pub fn main() !void {
         for (res.items) |event| {
             switch (event.code) {
                 .Char => |char| {
-                    // if (char == 'a') {
-                    //     try headerUpdateMsg("Polling network (ALL)...");
-                    //     try selection_a();
-                    //     try headerUpdateMsg("Polling complete (ALL).");
-                    // }
-                    // if (char == 'u') {
-                    //     try headerUpdateMsg("Polling network (UP)...");
-                    //     try selection_u();
-                    //     try headerUpdateMsg("Polling complete (UP).");
-                    // }
                     if (char == 'p') {
                         try headerUpdateMsg("Polling network...");
                         try selection_p();
@@ -81,42 +69,6 @@ pub fn main() !void {
         }
     }
 }
-
-// pub fn selection_a() !void {
-//     const stdout = std.io.getStdOut().writer();
-//
-//     // clear the main window
-//     const tsize = zth.TermSize.init(std.io.getStdOut());
-//     const top_line = 2;
-//     const bottom_line = tsize.getHeight() - 3;
-//     const num_lines = bottom_line - top_line;
-//     try ansi.Cursor.to(stdout, 0, top_line);
-//     for (0..num_lines) |_| {
-//         try ansi.Erase.line(stdout);
-//         try ansi.Cursor.move(stdout, 0, 1);
-//     }
-//
-//     try ansi.Cursor.to(stdout, 0, 4);
-//     _ = try np.network_poll_all();
-// }
-//
-// pub fn selection_u() !void {
-//     const stdout = std.io.getStdOut().writer();
-//
-//     // clear the main window
-//     const tsize = zth.TermSize.init(std.io.getStdOut());
-//     const top_line = 2;
-//     const bottom_line = tsize.getHeight() - 3;
-//     const num_lines = bottom_line - top_line;
-//     try ansi.Cursor.to(stdout, 0, top_line);
-//     for (0..num_lines) |_| {
-//         try ansi.Erase.line(stdout);
-//         try ansi.Cursor.move(stdout, 0, 1);
-//     }
-//
-//     try ansi.Cursor.to(stdout, 0, 4);
-//     _ = try np.network_poll_up();
-// }
 
 pub fn selection_p() !void {
     const stdout = std.io.getStdOut().writer();
@@ -210,49 +162,3 @@ pub fn printTitleBlock() !void {
 
     printInverseColor(" {s} ", .{prog_name}, "orange");
 }
-
-// pub fn dedupAndSortStrings(allocator: std.mem.Allocator, input_list: std.ArrayList([]const u8)) !std.ArrayList([]const u8) {
-//     // Sort the input list
-//     var sorted_list = try input_list.clone(allocator);
-//     defer sorted_list.deinit();
-//     std.sort.sort([]const u8, sorted_list.items, {}, comptime std.sort.asc([]const u8));
-//
-//     // Create a new list to store unique strings
-//     var unique_list = std.ArrayList([]const u8).init(allocator);
-//     errdefer unique_list.deinit();
-//
-//     // Add unique strings
-//     for (sorted_list.items) |current_str| {
-//         if (unique_list.items.len == 0 or
-//             !std.mem.eql(u8, current_str, unique_list.items[unique_list.items.len - 1])) {
-//             try unique_list.append(try allocator.dupe(u8, current_str));
-//         }
-//     }
-//
-//     return unique_list;
-// }
-//
-// test "dedup and sort strings" {
-//     var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
-//     defer arena.deinit();
-//     const allocator = arena.allocator();
-//
-//     var test_list = std.ArrayList([]const u8).init(allocator);
-//     defer test_list.deinit();
-//
-//     try test_list.appendSlice(&[_][]const u8{"banana", "apple", "cherry", "banana", "apple"});
-//
-//     const result = try dedupAndSortStrings(allocator, test_list);
-//     defer {
-//         for (result.items) |item| {
-//             allocator.free(item);
-//         }
-//         result.deinit();
-//     }
-//
-//     const expected = &[_][]const u8{"apple", "banana", "cherry"};
-//     try std.testing.expectEqual(expected.len, result.items.len);
-//     for (expected, 0..) |exp, i| {
-//         try std.testing.expectEqualStrings(exp, result.items[i]);
-//     }
-// }
