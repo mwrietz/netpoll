@@ -9,7 +9,6 @@ const keycodes = event_reader.keycodes;
 const print = zth.print;
 const printColor = zth.printColor;
 const printInverseColor = zth.printInverseColor;
-const clear = zth.clear;
 
 const version = "v0.1.0";
 
@@ -37,7 +36,7 @@ pub fn main() !void {
     try menu.append(.{ .key = "q", .action = "Quit" });
 
     // clear screen, display header, display menu
-    try clear();
+    try ansi.Clear.screen(std.io.getStdOut());
     try header();
     try headerUpdateMsg("Waiting for input...");
     try horizMenu(menu);
@@ -89,7 +88,7 @@ pub fn selection_p() !void {
 }
 
 pub fn selection_q() !void {
-    try clear();
+    try ansi.Clear.screen(std.io.getStdOut());
     try ansi.Cursor.show(std.io.getStdOut().writer());
 }
 
