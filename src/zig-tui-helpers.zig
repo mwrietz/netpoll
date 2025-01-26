@@ -1,9 +1,9 @@
 // zig-tui-helpers.zig
 
 const std = @import("std");
-const ansi = @import("ansi.zig").ansi;
-const datetime = @import("datetime.zig");
 const zc = @import("zig-colors.zig");
+const ansi = @import("third-party/ansi.zig").ansi;
+const datetime = @import("third-party/datetime.zig");
 
 const builtin = @import("builtin");
 const io = std.io;

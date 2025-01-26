@@ -1,9 +1,9 @@
 const std = @import("std");
-const zth = @import("modules/zig-tui-helpers.zig");
-const ansi = @import("modules/ansi.zig");
-const terminal = @import("modules/ztui-tabby/terminal.zig");
-const event_reader = @import("modules/ztui-tabby/events/event_reader.zig");
-const np = @import("modules/network_poll.zig");
+const zth = @import("zig-tui-helpers.zig");
+const ansi = @import("third-party/ansi.zig");
+const terminal = @import("third-party/ztui-tabby/terminal.zig");
+const event_reader = @import("third-party/ztui-tabby/events/event_reader.zig");
+const np = @import("network_poll.zig");
 const ui = @import("ui.zig");
 const keycodes = event_reader.keycodes;
 
@@ -13,13 +13,6 @@ const printInverseColor = zth.printInverseColor;
 
 const version = "v0.1.1";
 
-const Allocator = std.mem.Allocator;
-
-// const MenuItem = struct {
-//     key: []const u8,
-//     action: []const u8,
-// };
-//
 pub fn main() !void {
 
     // setup menu items

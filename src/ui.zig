@@ -1,6 +1,6 @@
 const std = @import("std");
-const zth = @import("modules/zig-tui-helpers.zig");
-const ansi = @import("modules/ansi.zig");
+const zth = @import("zig-tui-helpers.zig");
+const ansi = @import("third-party/ansi.zig");
 // const terminal = @import("modules/ztui-tabby/terminal.zig");
 // const event_reader = @import("modules/ztui-tabby/events/event_reader.zig");
 // const np = @import("modules/network_poll.zig");

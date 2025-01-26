@@ -1,7 +1,7 @@
 const std = @import("std");
 const mn = @import("mynet.zig");
 const zth = @import("zig-tui-helpers.zig");
-const ansi = @import("ansi.zig");
+const ansi = @import("third-party/ansi.zig");
 const Child = std.process.Child;
 
 const RunError = error{
