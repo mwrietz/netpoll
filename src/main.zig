@@ -11,7 +11,7 @@ const printColor = zth.printColor;
 const printInverseColor = zth.printInverseColor;
 const clear = zth.clear;
 
-const version = "v0.0.2";
+const version = "v0.1.0";
 
 const Allocator = std.mem.Allocator;
 
@@ -33,8 +33,9 @@ pub fn main() !void {
     var menu = std.ArrayList(MenuItem).init(allocator);
     defer menu.deinit();
 
-    try menu.append(.{ .key = "a", .action = "Poll_Network(ALL)" });
-    try menu.append(.{ .key = "u", .action = "Poll_Network(UP)" });
+    // try menu.append(.{ .key = "a", .action = "Poll_Network(ALL)" });
+    // try menu.append(.{ .key = "u", .action = "Poll_Network(UP)" });
+    try menu.append(.{ .key = "p", .action = "Poll_Network" });
     try menu.append(.{ .key = "q", .action = "Quit" });
 
     // clear screen, display header, display menu
@@ -55,15 +56,20 @@ pub fn main() !void {
         for (res.items) |event| {
             switch (event.code) {
                 .Char => |char| {
-                    if (char == 'a') {
-                        try headerUpdateMsg("Polling network (ALL)...");
-                        try selection_a();
-                        try headerUpdateMsg("Polling complete (ALL).");
-                    }
-                    if (char == 'u') {
-                        try headerUpdateMsg("Polling network (UP)...");
-                        try selection_u();
-                        try headerUpdateMsg("Polling complete (UP).");
+                    // if (char == 'a') {
+                    //     try headerUpdateMsg("Polling network (ALL)...");
+                    //     try selection_a();
+                    //     try headerUpdateMsg("Polling complete (ALL).");
+                    // }
+                    // if (char == 'u') {
+                    //     try headerUpdateMsg("Polling network (UP)...");
+                    //     try selection_u();
+                    //     try headerUpdateMsg("Polling complete (UP).");
+                    // }
+                    if (char == 'p') {
+                        try headerUpdateMsg("Polling network...");
+                        try selection_p();
+                        try headerUpdateMsg("Polling complete.");
                     }
                     if (char == 'q') {
                         try selection_q();
@@ -76,7 +82,43 @@ pub fn main() !void {
     }
 }
 
-pub fn selection_a() !void {
+// pub fn selection_a() !void {
+//     const stdout = std.io.getStdOut().writer();
+//
+//     // clear the main window
+//     const tsize = zth.TermSize.init(std.io.getStdOut());
+//     const top_line = 2;
+//     const bottom_line = tsize.getHeight() - 3;
+//     const num_lines = bottom_line - top_line;
+//     try ansi.Cursor.to(stdout, 0, top_line);
+//     for (0..num_lines) |_| {
+//         try ansi.Erase.line(stdout);
+//         try ansi.Cursor.move(stdout, 0, 1);
+//     }
+//
+//     try ansi.Cursor.to(stdout, 0, 4);
+//     _ = try np.network_poll_all();
+// }
+//
+// pub fn selection_u() !void {
+//     const stdout = std.io.getStdOut().writer();
+//
+//     // clear the main window
+//     const tsize = zth.TermSize.init(std.io.getStdOut());
+//     const top_line = 2;
+//     const bottom_line = tsize.getHeight() - 3;
+//     const num_lines = bottom_line - top_line;
+//     try ansi.Cursor.to(stdout, 0, top_line);
+//     for (0..num_lines) |_| {
+//         try ansi.Erase.line(stdout);
+//         try ansi.Cursor.move(stdout, 0, 1);
+//     }
+//
+//     try ansi.Cursor.to(stdout, 0, 4);
+//     _ = try np.network_poll_up();
+// }
+
+pub fn selection_p() !void {
     const stdout = std.io.getStdOut().writer();
 
     // clear the main window
@@ -91,25 +133,7 @@ pub fn selection_a() !void {
     }
 
     try ansi.Cursor.to(stdout, 0, 4);
-    try np.network_poll_all();
-}
-
-pub fn selection_u() !void {
-    const stdout = std.io.getStdOut().writer();
-
-    // clear the main window
-    const tsize = zth.TermSize.init(std.io.getStdOut());
-    const top_line = 2;
-    const bottom_line = tsize.getHeight() - 3;
-    const num_lines = bottom_line - top_line;
-    try ansi.Cursor.to(stdout, 0, top_line);
-    for (0..num_lines) |_| {
-        try ansi.Erase.line(stdout);
-        try ansi.Cursor.move(stdout, 0, 1);
-    }
-
-    try ansi.Cursor.to(stdout, 0, 4);
-    try np.network_poll_up();
+    try np.network_poll();
 }
 
 pub fn selection_q() !void {
