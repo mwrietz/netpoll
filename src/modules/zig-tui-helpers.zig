@@ -73,17 +73,9 @@ pub fn getFloat(prompt: []const u8) !f64 {
     }
 }
 
-// pub fn main() {
-//     const allocator = std.heap.page_allocator;
-//     const pn = try getProgramName(allocator);
-//     ........
-pub fn getProgramName(allocator: std.mem.Allocator) ![]const u8 {
-    const args = try std.process.argsAlloc(allocator);
-    defer std.process.argsFree(allocator, args);
-
-    const bn = args[0];
-    const basename = std.fs.path.basename(bn);
-    return allocator.dupe(u8, basename);
+pub fn getProgramName() ![]const u8 {
+    const args = try std.process.argsAlloc(std.heap.page_allocator);
+    return std.fs.path.basename(args[0]);
 }
 
 pub fn print(comptime fmt: []const u8, args: anytype) void {
@@ -97,9 +89,7 @@ pub fn print(comptime fmt: []const u8, args: anytype) void {
 pub fn printColor(comptime fmt: []const u8, args: anytype, color: []const u8) void {
     const stdout = std.io.getStdOut().writer();
 
-    const c = getColor(color);
-
-    stdout.print("{s}", .{c.foreground()}) catch |err| {
+    stdout.print("{s}", .{getColor(color).foreground()}) catch |err| {
         std.debug.print("Error while printing: {}\n", .{err});
         return;
     };
@@ -107,7 +97,7 @@ pub fn printColor(comptime fmt: []const u8, args: anytype, color: []const u8) vo
         std.debug.print("Error while printing: {}\n", .{err});
         return;
     };
-    stdout.print("{s}", .{zc.Color.reset.foreground()}) catch |err| {
+    stdout.print("{s}", .{getColor("reset").foreground()}) catch |err| {
         std.debug.print("Error while printing: {}\n", .{err});
         return;
     };
@@ -116,9 +106,7 @@ pub fn printColor(comptime fmt: []const u8, args: anytype, color: []const u8) vo
 pub fn printInverseColor(comptime fmt: []const u8, args: anytype, color: []const u8) void {
     const stdout = std.io.getStdOut().writer();
 
-    const c = getColor(color);
-
-    stdout.print("{s}{s}", .{ c.background(), zc.Color.black.foreground() }) catch |err| {
+    stdout.print("{s}{s}", .{ getColor(color).background(), zc.Color.black.foreground() }) catch |err| {
         std.debug.print("Error while printing: {}\n", .{err});
         return;
     };
@@ -126,7 +114,7 @@ pub fn printInverseColor(comptime fmt: []const u8, args: anytype, color: []const
         std.debug.print("Error while printing: {}\n", .{err});
         return;
     };
-    stdout.print("{s}{s}", .{ zc.Color.reset.background(), zc.Color.reset.foreground() }) catch |err| {
+    stdout.print("{s}{s}", .{ getColor("reset").background(), zc.Color.reset.foreground() }) catch |err| {
         std.debug.print("Error while printing: {}\n", .{err});
         return;
     };

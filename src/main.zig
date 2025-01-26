@@ -116,8 +116,8 @@ pub fn headerGetMsgWindowWidth() !u32 {
     // get terminal size and position cursor
     const tsize = zth.TermSize.init(std.io.getStdOut());
 
-    const allocator = std.heap.page_allocator;
-    const prog_name = try zth.getProgramName(allocator);
+    //const allocator = std.heap.page_allocator;
+    const prog_name = try zth.getProgramName();
     const vlen: u32 = @intCast(version.len);
     const nlen: u32 = @intCast(prog_name.len);
     var msg_window_width: u32 = 0;
@@ -128,15 +128,12 @@ pub fn headerGetMsgWindowWidth() !u32 {
 }
 
 pub fn header() !void {
-    const allocator = std.heap.page_allocator;
-    const prog_name = try zth.getProgramName(allocator);
-
     const stdout = std.io.getStdOut().writer();
 
     // print version
     const xpos = try headerGetMsgWindowWidth() + 1;
     try ansi.Cursor.to(stdout, xpos, 0);
-    printColor("{s} {s}", .{ prog_name, version }, "orange");
+    printColor("{s} {s}", .{ try zth.getProgramName(), version }, "orange");
 
     // print horizontal line
     try ansi.Cursor.to(stdout, 0, 1);
@@ -157,8 +154,5 @@ pub fn horizMenu(menu: std.ArrayList(MenuItem)) !void {
 }
 
 pub fn printTitleBlock() !void {
-    const allocator = std.heap.page_allocator;
-    const prog_name = try zth.getProgramName(allocator);
-
-    printInverseColor(" {s} ", .{prog_name}, "orange");
+    printInverseColor(" {s} ", .{try zth.getProgramName()}, "orange");
 }
